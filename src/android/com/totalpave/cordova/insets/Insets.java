@@ -152,7 +152,12 @@ public class Insets extends CordovaPlugin {
         }
         else if (action.equals("setMask")) {
             cordova.getActivity().runOnUiThread(() -> {
-                int mask = args.getInt(0);
+                try {
+                    int mask = args.getInt(0);
+                    insetMask = mapMask(mask);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
                 ViewCompat.requestApplyInsets(cordova.getActivity().findViewById(android.R.id.content));
                 // TODO: Not using callback context and wanting to return the insets, but perhaps we should
                 // just make it return void and let the listener propagate the change?
@@ -200,5 +205,7 @@ public class Insets extends CordovaPlugin {
         if ((webviewMask & WebviewMask.TAPPABLE_ELEMENT) != 0) {
             insetTypeMask |= WindowInsetsCompat.Type.tappableElement();
         }
+
+        return insetTypeMask;
     }
 }
